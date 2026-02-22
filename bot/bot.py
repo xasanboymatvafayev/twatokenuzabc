@@ -10,22 +10,11 @@ import os
 BOT_TOKEN = os.getenv("BOT_TOKEN", "YOUR_BOT_TOKEN")
 API_BASE = os.getenv("API_BASE", "http://localhost:8000/api")
 WEBAPP_URL = os.getenv("WEBAPP_URL", "https://your-casino-domain.com")
-REQUIRED_CHANNEL = os.getenv("REQUIRED_CHANNEL", "")  # e.g. "@yourchannel"
 SECRET = os.getenv("SECRET_KEY", "your-super-secret-key-c")[:20]
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
-
-# ============= SUBSCRIPTION CHECK =============
-async def check_subscription(user_id: int) -> bool:
-    if not REQUIRED_CHANNEL:
-        return True
-    try:
-        member = await bot.get_chat_member(REQUIRED_CHANNEL, user_id)
-        return member.status not in ["left", "kicked", "banned"]
-    except:
-        return False
 
 # ============= API HELPERS =============
 async def api_register(telegram_id: str):
@@ -50,19 +39,6 @@ async def api_get_user_info(username: str, password: str):
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     user_id = str(message.from_user.id)
-    
-    # Check subscription
-    if REQUIRED_CHANNEL and not await check_subscription(message.from_user.id):
-        keyboard = InlineKeyboardMarkup(inline_keyboard=[[
-            InlineKeyboardButton(text="📢 Kanalga obuna bo'lish", url=f"https://t.me/{REQUIRED_CHANNEL.lstrip('@')}"),
-            InlineKeyboardButton(text="✅ Tekshirish", callback_data="check_sub")
-        ]])
-        await message.answer(
-            "❌ *Botdan foydalanish uchun kanalga obuna bo'lishingiz kerak!*",
-            parse_mode="Markdown",
-            reply_markup=keyboard
-        )
-        return
     
     # Register/get user
     result = await api_register(user_id)
@@ -108,16 +84,6 @@ def main_keyboard():
         ],
         [InlineKeyboardButton(text="🎟 Promokod", callback_data="promo")]
     ])
-
-# ============= SUBSCRIPTION CHECK CALLBACK =============
-@dp.callback_query(F.data == "check_sub")
-async def check_sub_callback(callback: types.CallbackQuery):
-    if await check_subscription(callback.from_user.id):
-        await callback.message.delete()
-        # Restart
-        await cmd_start(callback.message)
-    else:
-        await callback.answer("❌ Siz hali obuna bo'lmagansiz!", show_alert=True)
 
 # ============= PROFILE =============
 @dp.callback_query(F.data == "profile")
