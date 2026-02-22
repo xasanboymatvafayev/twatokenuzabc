@@ -1,5 +1,4 @@
 from pydantic_settings import BaseSettings
-from typing import Optional
 import os
 
 class Settings(BaseSettings):
@@ -9,7 +8,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 10080  # 7 days
     
     BOT_TOKEN: str = "YOUR_BOT_TOKEN_HERE"
-    REQUIRED_CHANNEL: Optional[str] = None  # e.g. "@your_channel"
+
     
     HOUSE_EDGE: float = 0.05  # 5% house edge
     
