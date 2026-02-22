@@ -48,8 +48,8 @@ async def cmd_start(message: types.Message):
         keyboard = main_keyboard()
         await message.answer(
             f"👋 Xush kelibsiz qaytib!\n\n"
-            f"👤 Login: `{result['username']}`\n"
-            f"💰 Balans: *{result['balance']}* so'm\n\n"
+            f"👤 Login: `{result.get('username', '-')}`\n"
+            f"💰 Balans: *{result.get('balance', 0)}* so'm\n\n"
             f"O'yin o'ynash uchun quyidagi tugmalardan foydalaning:",
             parse_mode="Markdown",
             reply_markup=keyboard
@@ -61,8 +61,8 @@ async def cmd_start(message: types.Message):
             f"🎰 *Casino'ga xush kelibsiz!*\n\n"
             f"✅ Hisobingiz yaratildi!\n\n"
             f"━━━━━━━━━━━━━━━━\n"
-            f"👤 Login: `{result['username']}`\n"
-            f"🔐 Parol: `{result['password']}`\n"
+            f"👤 Login: `{result.get('username', '-')}`\n"
+            f"🔐 Parol: `{result.get('password', '-')}`\n"
             f"━━━━━━━━━━━━━━━━\n\n"
             f"⚠️ *Bu ma'lumotlarni saqlang!*\n"
             f"Web App'ga kirish uchun ishlatiladi.\n\n"
